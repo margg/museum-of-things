@@ -69,3 +69,4 @@ while True:
         # Button 1 pressed - on/off
         if cmd == int(0b11000011):
             mqttc.publish(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG if museum_open else OPEN_MSG, 0, True)
+            museum_open = not museum_open
