@@ -2,13 +2,13 @@
 
 import mosquitto
 import thread
-import serial
+# import serial
 
 from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
 from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC, OPEN_MSG, FLASH_TOPIC_PATH
 
-ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
-museum_open = False
+# ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
+# museum_open = False
 photo_counts = {}
 
 
@@ -55,9 +55,9 @@ mqttc.on_subscribe = on_subscribe
 # mqttc.on_log = on_log
 
 
-# todo: subscribe to needed things
-# Subscribe to Button 1 - on/off switch
-ser.write(chr(0b10010000))
+# # todo: subscribe to needed things
+# # Subscribe to Button 1 - on/off switch
+# ser.write(chr(0b10010000))
 
 # Set testament for the client
 mqttc.will_set(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, 0, True)
@@ -70,11 +70,20 @@ try:
 except:
     print "Error"
 
+
+def open_museum():
+    mqttc.publish(MUSEUM_GENERAL_TOPIC, OPEN_MSG, 0, True)
+
+
+def close_museum():
+    mqttc.publish(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, 0, True)
+
+
 while True:
-    cc = ser.read(1)
-    if len(cc) > 0:
-        cmd = ord(cc)
-        # Button 1 pressed - on/off
-        if cmd == int(0b11000011):
-            mqttc.publish(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG if museum_open else OPEN_MSG, 0, True)
-            museum_open = not museum_open
+    input_cmd = raw_input(">> ")
+    if input_cmd == "open":
+        open_museum()
+    elif input_cmd == "close":
+        close_museum()
+
+
