@@ -6,3 +6,4 @@ MUSEUM_TOPIC = "museum_name"
 MUSEUM_GENERAL_TOPIC = MUSEUM_TOPIC + "_all"
 
 FLASH_TOPIC_PATH = "/flash"
+TEMP_TOPIC_PATH = "/temp"

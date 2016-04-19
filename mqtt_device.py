@@ -6,7 +6,7 @@ import thread
 import serial
 
 from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
-from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC, FLASH_TOPIC_PATH
+from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC, FLASH_TOPIC_PATH, TEMP_TOPIC_PATH
 
 if len(sys.argv) < 2:
     print("Usage: \n\tpython mqtt_device.py <device_path>\n\neg. python mqtt_device.py /floor1/room2/ex3")
@@ -17,7 +17,10 @@ DEVICE_TOPIC = MUSEUM_TOPIC + DEVICE_PATH
 FLASH_TOPIC = DEVICE_TOPIC + FLASH_TOPIC_PATH
 FLASH_DETECTED_MSG = "got a flash here"
 
+TEMP_TOPIC = DEVICE_TOPIC + TEMP_TOPIC_PATH
+
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
+temperature = 20
 
 
 def on_connect(mqttc, obj, rc):
@@ -77,7 +80,7 @@ mqttc.on_subscribe = on_subscribe
 
 # todo: subscribe to needed things
 # Subscribe to motion/light sensor
-ser.write(chr(0b10000001))
+ser.write(chr(0b11000001))
 
 # Set testament for the client
 mqttc.will_set(DEVICE_TOPIC, DEVICE_TOPIC + " shutting down.", 0, True)
@@ -98,3 +101,8 @@ while True:
         # flash detected
         if cmd == int(0b11000001):
             mqttc.publish(FLASH_TOPIC, FLASH_DETECTED_MSG, 0, True)
+        elif int(0b01000000) <= cmd <= int(0b01111111):
+            global temperature
+            if abs(cmd - temperature) >= 2:
+                mqttc.publish(TEMP_TOPIC, cmd, 0, True)
+                temperature = cmd
