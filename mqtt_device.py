@@ -72,10 +72,10 @@ mqttc.on_message = on_message
 mqttc.on_connect = on_connect
 mqttc.on_publish = on_publish
 mqttc.on_subscribe = on_subscribe
-# Uncomment to enable debug messages
+# Enable debug messages
 # mqttc.on_log = on_log
 
-# setting testament for that client
+# Set testament for the client
 mqttc.will_set(DEVICE_TOPIC, DEVICE_TOPIC + " shutting down.", 0, True)
 
 mqttc.connect(MQTT_BROKER_IP, MQTT_BROKER_PORT, 60)
@@ -87,8 +87,6 @@ try:
     thread.start_new_thread(mqtt_thread_func, (mqttc,))
 except:
     print "Error"
-
-print "Started"
 
 while True:
     cc = ser.read(1)
