@@ -4,6 +4,13 @@ import mosquitto
 import thread
 import serial
 
+from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG
+
+DEVICE_TOPIC = "museum/floor2/room1/exhibit1"
+FLASH_TOPIC = DEVICE_TOPIC + "/flash"
+
+ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
+
 
 def on_connect(mqttc, obj, rc):
     print("Connected. (rc = " + str(rc) + ")")
@@ -12,8 +19,6 @@ def on_connect(mqttc, obj, rc):
 
 def on_message(mqttc, obj, msg):
     if msg.topic == DEVICE_TOPIC:
-        global SHUTDOWN_MSG
-        global OPEN_MSG
         if msg.payload == SHUTDOWN_MSG:
             close_exhibit()
         elif msg.payload == OPEN_MSG:
@@ -49,20 +54,6 @@ def close_exhibit():
     print("Exhibit closed.")
 
 
-SHUTDOWN_MSG = "shutdown"
-OPEN_MSG = "shutdown"
-MQTT_BROKER_IP = "127.0.0.1"
-MQTT_BROKER_PORT = 1883
-MUSEUM_GENERAL_TOPIC = "museum/all"
-DEVICE_TOPIC = "museum/floor2/room1/exhibit1"
-FLASH_TOPIC = DEVICE_TOPIC + "/flash"
-
-ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
-# todo: subscribe to needed things
-# Subscribe to motion/light sensor
-ser.write(chr(0b10000001))
-
-
 # If you want to use a specific client id, use
 # mqttc = mqtt.Client("client-id")
 # but note that the client id must be unique on the broker. Leaving the client
@@ -75,9 +66,13 @@ mqttc.on_subscribe = on_subscribe
 # Enable debug messages
 # mqttc.on_log = on_log
 
+
+# todo: subscribe to needed things
+# Subscribe to motion/light sensor
+ser.write(chr(0b10000001))
+
 # Set testament for the client
 mqttc.will_set(DEVICE_TOPIC, DEVICE_TOPIC + " shutting down.", 0, True)
-
 mqttc.connect(MQTT_BROKER_IP, MQTT_BROKER_PORT, 60)
 
 mqttc.subscribe(MUSEUM_GENERAL_TOPIC, 0)
