@@ -4,9 +4,10 @@ import mosquitto
 import thread
 import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC
+from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC, OPEN_MSG
 
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
+museum_open = False
 
 
 def on_connect(mqttc, obj, rc):
@@ -47,8 +48,8 @@ mqttc.on_subscribe = on_subscribe
 
 
 # todo: subscribe to needed things
-# Subscribe to motion/light sensor
-ser.write(chr(0b10000001))
+# Subscribe to Button 1 - on/off switch
+ser.write(chr(0b10010000))
 
 # Set testament for the client
 mqttc.will_set(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, 0, True)
@@ -65,6 +66,6 @@ while True:
     cc = ser.read(1)
     if len(cc) > 0:
         cmd = ord(cc)
-        # flash detected
-        if cmd == int(0b11000001):
-            mqttc.publish(FLASH_TOPIC, "got a flash here", 0, True)
+        # Button 1 pressed - on/off
+        if cmd == int(0b11000011):
+            mqttc.publish(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG if museum_open else OPEN_MSG, 0, True)

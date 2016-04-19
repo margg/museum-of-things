@@ -4,10 +4,11 @@ import mosquitto
 import thread
 import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG
+from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC
 
-DEVICE_TOPIC = "museum/floor2/room1/exhibit1"
+DEVICE_TOPIC = MUSEUM_TOPIC + "/floor2/room1/exhibit1"
 FLASH_TOPIC = DEVICE_TOPIC + "/flash"
+FLASH_DETECTED_MSG = "got a flash here"
 
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
 
@@ -89,4 +90,4 @@ while True:
         cmd = ord(cc)
         # flash detected
         if cmd == int(0b11000001):
-            mqttc.publish(FLASH_TOPIC, "got a flash here", 0, True)
+            mqttc.publish(FLASH_TOPIC, FLASH_DETECTED_MSG, 0, True)
