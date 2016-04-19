@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import sys
 import mosquitto
 import thread
 import serial
@@ -14,8 +13,11 @@ def on_connect(mqttc, obj, rc):
 def on_message(mqttc, obj, msg):
     if msg.topic == DEVICE_TOPIC:
         global SHUTDOWN_MSG
+        global OPEN_MSG
         if msg.payload == SHUTDOWN_MSG:
             close_exhibit()
+        elif msg.payload == OPEN_MSG:
+            open_exhibit()
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 
@@ -48,6 +50,7 @@ def close_exhibit():
 
 
 SHUTDOWN_MSG = "shutdown"
+OPEN_MSG = "shutdown"
 MQTT_BROKER_IP = "127.0.0.1"
 MQTT_BROKER_PORT = 1883
 MUSEUM_GENERAL_TOPIC = "museum/all"
