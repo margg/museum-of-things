@@ -4,10 +4,12 @@ import mosquitto
 import thread
 import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC, OPEN_MSG
+from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
+from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC, OPEN_MSG, FLASH_TOPIC_PATH
 
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
 museum_open = False
+photo_counts = {}
 
 
 def on_connect(mqttc, obj, rc):
@@ -15,6 +17,12 @@ def on_connect(mqttc, obj, rc):
 
 
 def on_message(mqttc, obj, msg):
+    if msg.payload.endswith(FLASH_TOPIC_PATH):
+        dev = msg.topic[:-len(FLASH_TOPIC_PATH)]
+        if dev in photo_counts.keys():
+            photo_counts[dev] += 1
+        else:
+            photo_counts[dev] = 1
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 

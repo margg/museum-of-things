@@ -5,8 +5,8 @@ import mosquitto
 import thread
 import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT, MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC
-
+from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
+from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC, FLASH_TOPIC_PATH
 
 if len(sys.argv) < 2:
     print("Usage: \n\tpython mqtt_device.py <device_path>\n\neg. python mqtt_device.py /floor1/room2/ex3")
@@ -14,7 +14,7 @@ if len(sys.argv) < 2:
 
 DEVICE_PATH = sys.argv[1]
 DEVICE_TOPIC = MUSEUM_TOPIC + DEVICE_PATH
-FLASH_TOPIC = DEVICE_TOPIC + "/flash"
+FLASH_TOPIC = DEVICE_TOPIC + FLASH_TOPIC_PATH
 FLASH_DETECTED_MSG = "got a flash here"
 
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
