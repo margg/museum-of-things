@@ -24,6 +24,8 @@ def on_message(mqttc, obj, msg):
             photo_counts[device_path] += 1
         else:
             photo_counts[device_path] = 1
+        if photo_counts[device_path] > MAX_PHOTOS:
+            close_device(device_path)
     elif msg.topic.endswith(TEMP_TOPIC_PATH):
         temperatures[device_path] = int(msg.payload)
         if int(msg.payload) > MAX_TEMP and open_devices[device_path] == True:

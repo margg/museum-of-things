@@ -10,3 +10,4 @@ TEMP_TOPIC_PATH = "/temp"
 HELLO_TOPIC_PATH = "/hello"
 
 MAX_TEMP = 25
+MAX_PHOTOS = 5
