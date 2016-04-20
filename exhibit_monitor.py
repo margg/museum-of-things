@@ -83,16 +83,24 @@ except:
 
 def open_device(path):
     mqttc.publish(path, OPEN_MSG, 0, True)
+    open_devices[path] = True
+
 
 def close_device(path):
     mqttc.publish(path, SHUTDOWN_MSG, 0, True)
+    open_devices[path] = False
+
 
 def open_museum():
     mqttc.publish(MUSEUM_GENERAL_TOPIC, OPEN_MSG, 0, True)
+    for device in open_devices.keys():
+        open_devices[device] = True
 
 
 def close_museum():
     mqttc.publish(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, 0, True)
+    for device in open_devices.keys():
+        open_devices[device] = False
 
 
 while True:
