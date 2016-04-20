@@ -5,8 +5,7 @@ import mosquitto
 import thread
 import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
-from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, OPEN_MSG, MUSEUM_TOPIC, FLASH_TOPIC_PATH, TEMP_TOPIC_PATH
+from config import *
 
 if len(sys.argv) < 2:
     print("Usage: \n\tpython mqtt_device.py <device_path>\n\neg. python mqtt_device.py /floor1/room2/ex3")

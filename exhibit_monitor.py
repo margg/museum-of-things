@@ -10,7 +10,7 @@ from config import *
 # museum_open = False
 photo_counts = {}
 temperatures = {}
-is_open = {}
+open_devices = {}
 
 
 def on_connect(mqttc, obj, rc):
@@ -27,11 +27,13 @@ def on_message(mqttc, obj, msg):
     elif msg.topic.endswith(TEMP_TOPIC_PATH):
         if device_path in temperatures.keys():
             temperatures[device_path] = int(msg.payload)
-            if int(msg.payload) > MAX_TEMP and is_open[device_path] == True:
+            if int(msg.payload) > MAX_TEMP and open_devices[device_path] == True:
                 close_device(device_path)
-            elif int(msg.payload) < MAX_TEMP and is_open[device_path] == False:
+            elif int(msg.payload) < MAX_TEMP and open_devices[device_path] == False:
                 open_device(device_path)
-                
+    elif msg.topic.endswith(HELLO_TOPIC_PATH):
+        open_devices[device_path] = True
+
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 
