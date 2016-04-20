@@ -4,12 +4,13 @@ import mosquitto
 import thread
 # import serial
 
-from config import MQTT_BROKER_IP, MQTT_BROKER_PORT
-from config import MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, MUSEUM_TOPIC, OPEN_MSG, FLASH_TOPIC_PATH
+from config import *
 
 # ser = serial.Serial('/dev/ttyS0', 38400, timeout=1)
 # museum_open = False
 photo_counts = {}
+temperatures = {}
+is_open = {}
 
 
 def on_connect(mqttc, obj, rc):
@@ -23,6 +24,14 @@ def on_message(mqttc, obj, msg):
             photo_counts[device_path] += 1
         else:
             photo_counts[device_path] = 1
+    elif msg.payload.endswith(TEMP_TOPIC_PATH):
+        if device_path in temperatures.keys():
+            temperatures[device_path] = int(msg.payload)
+            if int(msg.payload) > MAX_TEMP and is_open[device_path] == True:
+                close_device(device_path)
+            elif int(msg.payload) < MAX_TEMP and is_open[device_path] == False:
+                open_device(device_path)
+                
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 
@@ -70,6 +79,12 @@ try:
 except:
     print "Error"
 
+
+def open_device(path):
+    mqttc.publish(path, OPEN_MSG, 0, True)
+
+def close_device(path):
+    mqttc.publish(path, SHUTDOWN_MSG, 0, True)
 
 def open_museum():
     mqttc.publish(MUSEUM_GENERAL_TOPIC, OPEN_MSG, 0, True)
