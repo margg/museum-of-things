@@ -17,12 +17,12 @@ def on_connect(mqttc, obj, rc):
 
 
 def on_message(mqttc, obj, msg):
-    if msg.payload.endswith(FLASH_TOPIC_PATH):
-        dev = msg.topic[:-len(FLASH_TOPIC_PATH)]
-        if dev in photo_counts.keys():
-            photo_counts[dev] += 1
+    device_path = msg.topic[:msg.topic.rfind("/")]
+    if msg.topic.endswith(FLASH_TOPIC_PATH):
+        if device_path in photo_counts.keys():
+            photo_counts[device_path] += 1
         else:
-            photo_counts[dev] = 1
+            photo_counts[device_path] = 1
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 
