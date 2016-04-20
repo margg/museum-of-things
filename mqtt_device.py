@@ -14,7 +14,9 @@ if len(sys.argv) < 2:
 DEVICE_PATH = sys.argv[1]
 DEVICE_TOPIC = MUSEUM_TOPIC + DEVICE_PATH
 FLASH_TOPIC = DEVICE_TOPIC + FLASH_TOPIC_PATH
+HELLO_TOPIC = DEVICE_TOPIC + HELLO_TOPIC_PATH
 FLASH_DETECTED_MSG = "got a flash here"
+HELLO_MSG = "hi"
 
 TEMP_TOPIC = DEVICE_TOPIC + TEMP_TOPIC_PATH
 
@@ -24,6 +26,7 @@ temperature = 20
 
 def on_connect(mqttc, obj, rc):
     print("Connected. (rc = " + str(rc) + ")")
+    send_hello()
     open_exhibit()
 
 
@@ -50,6 +53,11 @@ def on_log(mqttc, obj, level, string):
 
 def mqtt_thread_func(mqttc):
     mqttc.loop_forever()
+
+
+def send_hello():
+    mqttc.publish(HELLO_TOPIC, HELLO_MSG, 0, True)
+    print("Sent hello message.")
 
 
 def open_exhibit():
