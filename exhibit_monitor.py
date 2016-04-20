@@ -25,12 +25,11 @@ def on_message(mqttc, obj, msg):
         else:
             photo_counts[device_path] = 1
     elif msg.topic.endswith(TEMP_TOPIC_PATH):
-        if device_path in temperatures.keys():
-            temperatures[device_path] = int(msg.payload)
-            if int(msg.payload) > MAX_TEMP and is_open[device_path] == True:
-                close_device(device_path)
-            elif int(msg.payload) < MAX_TEMP and is_open[device_path] == False:
-                open_device(device_path)
+        temperatures[device_path] = int(msg.payload)
+        if int(msg.payload) > MAX_TEMP and is_open[device_path] == True:
+            close_device(device_path)
+        elif int(msg.payload) < MAX_TEMP and is_open[device_path] == False:
+            open_device(device_path)
                 
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
