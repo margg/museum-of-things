@@ -15,7 +15,7 @@ DEVICE_PATH = sys.argv[1]
 DEVICE_TOPIC = MUSEUM_TOPIC + DEVICE_PATH
 FLASH_TOPIC = DEVICE_TOPIC + FLASH_TOPIC_PATH
 HELLO_TOPIC = DEVICE_TOPIC + HELLO_TOPIC_PATH
-FLASH_DETECTED_MSG = "got a flash here"
+FLASH_DETECTED_MSG = "flash"
 HELLO_MSG = "hi"
 
 TEMP_TOPIC = DEVICE_TOPIC + TEMP_TOPIC_PATH
@@ -31,7 +31,7 @@ def on_connect(mqttc, obj, rc):
 
 
 def on_message(mqttc, obj, msg):
-    if msg.topic == DEVICE_TOPIC:
+    if msg.topic == MUSEUM_GENERAL_TOPIC or msg.topic == DEVICE_TOPIC:
         if msg.payload == SHUTDOWN_MSG:
             close_exhibit()
         elif msg.payload == OPEN_MSG:
@@ -62,13 +62,13 @@ def send_hello():
 
 def open_exhibit():
     # set RGB LED to green
-    ser.write(chr(0b0001100))
+    ser.write(chr(0b01001100))
     print("Exhibit opened.")
 
 
 def close_exhibit():
     # set RGB LED to red
-    ser.write(chr(0b0110000))
+    ser.write(chr(0b01110000))
     print("Exhibit closed.")
 
 
@@ -82,12 +82,11 @@ mqttc.on_connect = on_connect
 mqttc.on_publish = on_publish
 mqttc.on_subscribe = on_subscribe
 # Enable debug messages
-# mqttc.on_log = on_log
+mqttc.on_log = on_log
 
 
-# todo: subscribe to needed things
-# Subscribe to motion/light sensor
-ser.write(chr(0b11000001))
+# Subscribe to motion/light sensor and knob
+ser.write(chr(0b10000101))
 
 # Set testament for the client
 mqttc.will_set(DEVICE_TOPIC, DEVICE_TOPIC + " shutting down.", 0, True)
@@ -104,12 +103,15 @@ except:
 while True:
     cc = ser.read(1)
     if len(cc) > 0:
-        cmd = ord(cc)
-        # flash detected
+        cmd = int(ord(cc))
+        print("cmd: " + str(cmd))
         if cmd == int(0b11000001):
+            print("flash detected")
             mqttc.publish(FLASH_TOPIC, FLASH_DETECTED_MSG, 0, True)
         elif int(0b01000000) <= cmd <= int(0b01111111):
             global temperature
+            cmd -= 64
+            print("temperature: " + str(cmd))
             if abs(cmd - temperature) >= 2:
                 mqttc.publish(TEMP_TOPIC, cmd, 0, True)
                 temperature = cmd
