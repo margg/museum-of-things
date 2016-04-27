@@ -75,7 +75,7 @@ mqttc.on_subscribe = on_subscribe
 mqttc.will_set(MUSEUM_GENERAL_TOPIC, SHUTDOWN_MSG, 0, True)
 mqttc.connect(MQTT_BROKER_IP, MQTT_BROKER_PORT, 60)
 
-mqttc.subscribe(MUSEUM_TOPIC + "/*", 0)
+mqttc.subscribe(MUSEUM_TOPIC + "/#", 0)
 
 try:
     thread.start_new_thread(mqtt_thread_func, (mqttc,))
