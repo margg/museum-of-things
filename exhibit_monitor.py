@@ -113,21 +113,21 @@ def init_device(path):
     spreadsheet.update_cell(current_row, 2, path)
     spreadsheet.update_cell(current_row, 3, 0)
     spreadsheet.update_cell(current_row, 4, 20)
-    spreadsheet.update_cell(current_row, 5, "tak")
+    spreadsheet.update_cell(current_row, 5, "otwarty")
 
 
 def open_device(path):
     mqttc.publish(path, OPEN_MSG, 0, True)
     open_devices[path] = True
     global spreadsheet
-    spreadsheet.update_cell(rows[path], 5, "tak")
+    spreadsheet.update_cell(rows[path], 5, "otwarty")
 
 
 def close_device(path):
     mqttc.publish(path, SHUTDOWN_MSG, 0, True)
     open_devices[path] = False
     global spreadsheet
-    spreadsheet.update_cell(rows[path], 5, "nie")
+    spreadsheet.update_cell(rows[path], 5, "zamknięty")
 
 
 def open_museum():
