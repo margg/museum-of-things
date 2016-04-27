@@ -11,3 +11,6 @@ HELLO_TOPIC_PATH = "/hello"
 
 MAX_TEMP = 25
 MAX_PHOTOS = 5
+
+SPREADSHEET_NAME = "mot"
+GOOGLE_CREDENTIALS = "iot-first-fifth-cbc92bb37a1f.json"

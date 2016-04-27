@@ -18,12 +18,12 @@ open_devices = {}
 rows = {}
 current_row = 3
 
-json_key = json.load(open('iot-first-fifth-cbc92bb37a1f.json'))
+json_key = json.load(open(GOOGLE_CREDENTIALS))
 scope = ['https://spreadsheets.google.com/feeds']
 
 credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'].encode(), scope)
 gc = gspread.authorize(credentials)
-spreadsheet = gc.open("mot").sheet1
+spreadsheet = gc.open(SPREADSHEET_NAME).sheet1
 
 
 def on_connect(mqttc, obj, rc):
